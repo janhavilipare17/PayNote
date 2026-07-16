@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getPayNotesForAddress, getReputation, ApiError, Reputation } from "@/lib/api";
 import { PayNote } from "@/lib/types";
+import Header from "@/components/Header";
 
 export default function DashboardPage() {
   const params = useParams();
@@ -71,13 +72,8 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-surface">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="PayNote logo" className="h-8 w-8 rounded-lg" />
-            <span className="text-lg font-bold text-text-primary">PayNote</span>
-          </div>
-
+      <Header
+        right={
           <div className="flex items-center gap-4">
             {reputation && (
               <span className="text-xs font-medium text-text-secondary bg-accent-bg px-2 py-1 rounded-full">
@@ -97,8 +93,8 @@ export default function DashboardPage() {
               Disconnect
             </button>
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="mx-auto max-w-3xl px-6 py-10">
         <div className="flex items-center justify-between mb-6">
@@ -110,6 +106,10 @@ export default function DashboardPage() {
             + Create PayNote
           </button>
         </div>
+
+        {!loading && !error && payNotes && payNotes.length > 0 && (
+          <StatsRow payNotes={payNotes} />
+        )}
 
         {loading && (
           <div>
@@ -166,6 +166,37 @@ export default function DashboardPage() {
           </div>
         )}
       </main>
+    </div>
+  );
+}
+
+function StatsRow({ payNotes }: { payNotes: PayNote[] }) {
+  const paid = payNotes.filter((n) => n.status === "paid").length;
+  const pending = payNotes.filter((n) => n.status === "pending").length;
+  const total = payNotes.length;
+
+  return (
+    <div className="grid grid-cols-3 gap-4 mb-6">
+      <StatCard label="Total PayNotes" value={total} />
+      <StatCard label="Paid" value={paid} accent="text-success" />
+      <StatCard label="Pending" value={pending} accent="text-pending" />
+    </div>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: number;
+  accent?: string;
+}) {
+  return (
+    <div className="rounded-2xl bg-surface border border-border p-5 shadow-sm">
+      <p className="text-sm text-text-secondary">{label}</p>
+      <p className={`mt-1 text-2xl font-bold ${accent ?? "text-text-primary"}`}>{value}</p>
     </div>
   );
 }

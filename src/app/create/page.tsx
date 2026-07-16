@@ -9,6 +9,7 @@ import {
 } from "@/lib/buildCreatePayNote";
 import { syncPayNote } from "@/lib/api";
 import { Networks } from "@stellar/stellar-sdk";
+import Header from "@/components/Header";
 
 export default function CreatePayNotePage() {
   const router = useRouter();
@@ -60,20 +61,16 @@ export default function CreatePayNotePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-surface">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="PayNote logo" className="h-8 w-8 rounded-lg" />
-            <span className="text-lg font-bold text-text-primary">PayNote</span>
-          </div>
+      <Header
+        right={
           <button
             onClick={() => router.back()}
             className="text-sm font-medium text-text-secondary hover:text-text-primary transition"
           >
             ← Back
           </button>
-        </div>
-      </header>
+        }
+      />
 
       <main className="mx-auto max-w-lg px-6 py-10">
         <h1 className="text-2xl font-bold text-text-primary mb-6">Create PayNote</h1>
@@ -107,8 +104,8 @@ export default function CreatePayNotePage() {
               className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-text-primary focus:outline-none focus:border-brand transition"
             >
               <option value="XLM">XLM</option>
-              <option value="USDC">USDC</option>
               <option value="TESTUSD">TESTUSD</option>
+              <option value="TESTEUR">TESTEUR</option>
             </select>
           </div>
 

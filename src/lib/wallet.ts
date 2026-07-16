@@ -21,14 +21,10 @@ export async function connectWallet(): Promise<string> {
     );
   }
 
-  const allowedCheck = await isAllowed();
-  if (!allowedCheck.isAllowed) {
-    const access = await setAllowed();
-    if (!access.isAllowed) {
-      throw new Error("Wallet access was not granted.");
-    }
-  }
-
+  // requestAccess() itself prompts the user for permission if needed and
+  // waits for their response — checking isAllowed/setAllowed separately
+  // beforehand caused a race condition where the first click could fail
+  // before the user had finished approving in the popup.
   const accessResult = await requestAccess();
   if (accessResult.error) {
     throw new Error(accessResult.error);

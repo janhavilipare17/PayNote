@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { connectWallet } from "@/lib/wallet";
 import { getStoredWalletAddress, storeWalletAddress } from "@/lib/wallet";
+import Header from "@/components/Header";
 
 export default function Home() {
   const router = useRouter();
@@ -44,13 +45,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       {/* Navbar */}
-      {/* Navbar */}
-      <header className="border-b border-border bg-surface">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="PayNote logo" className="h-8 w-8 rounded-lg" />
-            <span className="text-lg font-bold text-text-primary">PayNote</span>
-          </div>
+      <Header
+        right={
           <button
             onClick={handleConnect}
             disabled={connecting}
@@ -58,8 +54,8 @@ export default function Home() {
           >
             {connecting ? "Connecting..." : "Connect Wallet"}
           </button>
-        </div>
-      </header>
+        }
+      />
 
       {/* Hero */}
       <section className="mx-auto max-w-6xl px-6 py-16">
@@ -133,7 +129,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Why section */}
       {/* Why section */}
       <section className="mx-auto max-w-3xl px-6 py-16 text-center">
         <h2 className="text-3xl font-bold text-text-primary">Why Institutional Tech?</h2>
