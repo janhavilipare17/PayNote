@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand colors */
+  --color-brand: #2563eb;
+  --color-brand-dark: #1d4ed8;
+  --color-navy: #0f172a;
+
+  /* Status colors */
+  --color-success: #16a34a;
+  --color-success-bg: #dcfce7;
+  --color-pending: #d97706;
+  --color-pending-bg: #fef3c7;
+  --color-error: #dc2626;
+  --color-error-bg: #fee2e2;
+
+  /* Neutrals */
+  --color-background: #f8f9fc;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f1f3f9;
+  --color-border: #e5e7eb;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #6b7280;
+
+  /* Soft accent backgrounds (for badges/icons like the reference) */
+  --color-accent-bg: #dbeafe;
+
+  /* Fonts */
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+}
