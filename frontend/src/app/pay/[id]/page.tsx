@@ -70,10 +70,14 @@ export default function PayPage() {
   }, [note]);
 
   // Poll for payment status once we've submitted
+ // Poll for payment status once we've submitted
   useEffect(() => {
     if (payState !== "polling" || !note) return;
     const interval = setInterval(async () => {
       try {
+        await fetch(`https://paynote-backend.onrender.com/api/paynotes/${id}/recheck`, {
+          method: "POST",
+        });
         const updated = await getPayNote(id);
         if (updated.status === "paid") {
           setNote(updated);
