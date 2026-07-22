@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 import { PayNote } from "@/lib/types";
 import { getPayNote, getReputation, ApiError, Reputation } from "@/lib/api";
@@ -29,6 +29,7 @@ export default function PayPage() {
   const [txHash, setTxHash] = useState<string | null>(null);
 
   const [reputation, setReputation] = useState<Reputation | null>(null);
+  const [justPaid, setJustPaid] = useState(false);
 
   const loadNote = useCallback(async () => {
     try {
@@ -66,6 +67,23 @@ export default function PayPage() {
       .catch(() => {});
   }, [note]);
 
+  const prevStatusRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!note) return;
+    const prevStatus = prevStatusRef.current;
+    const stampedKey = `paynote-stamped-${id}`;
+    if (
+      prevStatus !== null &&
+      prevStatus !== "paid" &&
+      note.status === "paid" &&
+      !sessionStorage.getItem(stampedKey)
+    ) {
+      setJustPaid(true);
+      sessionStorage.setItem(stampedKey, "1");
+    }
+    prevStatusRef.current = note.status;
+  }, [note, id]);
+
   useEffect(() => {
     if (payState !== "polling" || !note) return;
     const interval = setInterval(async () => {
@@ -77,6 +95,7 @@ export default function PayPage() {
         if (updated.status === "paid") {
           setNote(updated);
           setPayState("done");
+          setJustPaid(true);
           clearInterval(interval);
         }
       } catch {
@@ -225,6 +244,16 @@ export default function PayPage() {
 
         {alreadyPaid ? (
           <div>
+            {justPaid && (
+              <div className="relative flex justify-center mb-5 h-24">
+                <span className="absolute w-24 h-24 rounded-full border-2 border-mint animate-stamp-ring" />
+                <span className="absolute w-24 h-24 rounded-full border-4 border-double border-mint flex items-center justify-center animate-stamp-in">
+                  <span className="font-mono text-xs font-bold tracking-widest text-mint">
+                    PAID
+                  </span>
+                </span>
+              </div>
+            )}
             <div className="bg-mint-bg border border-mint/20 text-mint rounded-md px-4 py-3 text-sm font-medium">
               ✓ Payment received. Thank you!
             </div>
