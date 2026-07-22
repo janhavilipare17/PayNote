@@ -1,7 +1,7 @@
 // src/lib/api.ts
 import { PayNote } from "./types";
 
-const API_BASE_URL = "https://paynote-backend.onrender.com";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://paynote-backend.onrender.com";
 
 class ApiError extends Error {
   status: number;

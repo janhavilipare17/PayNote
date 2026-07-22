@@ -75,7 +75,7 @@ export default function PayPage() {
     const interval = setInterval(async () => {
       try {
         // Force a fresh on-chain check first, then read the result
-        await fetch(`https://paynote-backend.onrender.com/api/paynotes/${id}/recheck`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "https://paynote-backend.onrender.com"}/api/paynotes/${id}/recheck`, {
           method: "POST",
         });
         const updated = await getPayNote(id);
