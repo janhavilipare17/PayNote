@@ -27,9 +27,71 @@
 
   /* Fonts */
   --font-sans: var(--font-inter);
+
+  /* --- Ledger (dark, Web3) theme tokens --- */
+  --color-ink: #0b0f1a;
+  --color-ink-surface: #121826;
+  --color-ink-line: #1c2333;
+  --color-lumen: #5b8def;
+  --color-lumen-dim: #3e6bc4;
+  --color-mint: #3ddc97;
+  --color-mint-bg: #123326;
+  --color-amber-ink: #f2a93b;
+  --color-amber-ink-bg: #2e2210;
+  --color-rust: #c97575;
+  --color-rust-bg: #2a1818;
+  --color-ink-text: #edf1fa;
+  --color-ink-text-secondary: #7c879c;
+
+  --font-display: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 body {
   background: var(--color-background);
   color: var(--color-text-primary);
+}
+
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: scale(2.2) rotate(-18deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.92) rotate(-8deg);
+  }
+  80% {
+    transform: scale(1.04) rotate(-10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-10deg);
+  }
+}
+
+@keyframes stamp-ring {
+  0% {
+    opacity: 0.6;
+    transform: scale(0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+}
+
+.animate-stamp-in {
+  animation: stamp-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.animate-stamp-ring {
+  animation: stamp-ring 0.7s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-stamp-in,
+  .animate-stamp-ring {
+    animation: none;
+  }
 }

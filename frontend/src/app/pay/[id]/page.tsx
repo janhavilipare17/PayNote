@@ -59,23 +59,17 @@ export default function PayPage() {
     });
   }, []);
 
-  // Fetch reputation for the creator once the PayNote loads
   useEffect(() => {
     if (!note) return;
     getReputation(note.creatorAddress)
       .then(setReputation)
-      .catch(() => {
-        // reputation is a nice-to-have; fail silently if it errors
-      });
+      .catch(() => {});
   }, [note]);
 
-  // Poll for payment status once we've submitted
- // Poll for payment status once we've submitted
   useEffect(() => {
     if (payState !== "polling" || !note) return;
     const interval = setInterval(async () => {
       try {
-        // Force a fresh on-chain check first, then read the result
         await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "https://paynote-backend.onrender.com"}/api/paynotes/${id}/recheck`, {
           method: "POST",
         });
@@ -149,9 +143,9 @@ export default function PayPage() {
   if (pageState === "loading") {
     return (
       <Centered>
-        <p className="text-text-secondary">Loading PayNote...</p>
+        <p className="text-ink-text-secondary">Loading PayNote...</p>
         {showSlowMessage && (
-          <p className="text-text-secondary text-sm mt-2 text-center max-w-xs">
+          <p className="text-ink-text-secondary text-sm mt-2 text-center max-w-xs">
             First load can take up to a minute while the server wakes up. Thanks for your patience!
           </p>
         )}
@@ -163,8 +157,8 @@ export default function PayPage() {
     return (
       <Centered>
         <Card>
-          <p className="text-error font-medium">PayNote not found</p>
-          <p className="text-text-secondary text-sm mt-2">
+          <p className="text-rust font-medium">PayNote not found</p>
+          <p className="text-ink-text-secondary text-sm mt-2">
             This link may be invalid or expired.
           </p>
         </Card>
@@ -176,14 +170,14 @@ export default function PayPage() {
     return (
       <Centered>
         <Card>
-          <p className="text-error font-medium">Something went wrong</p>
-          <p className="text-text-secondary text-sm mt-2">{errorMessage}</p>
+          <p className="text-rust font-medium">Something went wrong</p>
+          <p className="text-ink-text-secondary text-sm mt-2">{errorMessage}</p>
           <button
             onClick={() => {
               setPageState("loading");
               loadNote();
             }}
-            className="mt-4 bg-navy text-white px-4 py-2 rounded-lg text-sm"
+            className="mt-4 bg-lumen text-ink px-4 py-2 rounded-md text-sm font-medium hover:bg-lumen-dim transition"
           >
             Try again
           </button>
@@ -203,23 +197,23 @@ export default function PayPage() {
     <Centered>
       <Card>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-text-secondary text-sm">PayNote #{note.id}</span>
-          <StatusBadge status={alreadyPaid ? "paid" : note.status} />
+          <span className="text-ink-text-secondary text-sm font-mono">PayNote #{note.id}</span>
+          <Stamp status={alreadyPaid ? "paid" : note.status} />
         </div>
 
         <div className="flex items-center justify-between mb-4">
-          <span className="text-xs text-text-secondary">To: {shortCreator}</span>
+          <span className="text-xs text-ink-text-secondary font-mono">To: {shortCreator}</span>
           {reputation && <ReputationBadge reputation={reputation} />}
         </div>
 
-        <h1 className="text-3xl font-bold text-text-primary">
+        <h1 className="font-display text-3xl font-bold text-ink-text">
           {note.amount} {note.asset}
         </h1>
-        <p className="text-text-secondary mt-1">{note.description}</p>
+        <p className="text-ink-text-secondary mt-1">{note.description}</p>
 
         {!isExpired && !alreadyPaid && (
           <div className="flex justify-center my-4">
-            <div className="p-3 bg-white rounded-lg border border-border">
+            <div className="p-3 bg-white rounded-lg border border-ink-line">
               <QRCodeSVG value={typeof window !== "undefined" ? window.location.href : ""} size={140} />
             </div>
           </div>
@@ -227,37 +221,36 @@ export default function PayPage() {
 
         <ShareRow note={note} copied={copied} onCopy={handleCopyLink} />
 
-        <div className="border-t border-border my-6" />
+        <div className="border-t border-ink-line my-6" />
 
         {alreadyPaid ? (
           <div>
-            <div className="bg-success-bg text-success rounded-lg px-4 py-3 text-sm font-medium">
+            <div className="bg-mint-bg border border-mint/20 text-mint rounded-md px-4 py-3 text-sm font-medium">
               ✓ Payment received. Thank you!
             </div>
             {txHash && (
-              
-                <a href={`https://stellar.expert/explorer/testnet/tx/${txHash}`}
+              <a href={`https://stellar.expert/explorer/testnet/tx/${txHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-medium text-brand hover:underline mt-3 block text-center"
+                className="text-sm font-medium text-lumen hover:underline mt-3 block text-center"
               >
                 View transaction on Stellar Expert →
               </a>
             )}
           </div>
         ) : isExpired ? (
-          <div className="bg-surface-hover border border-border text-text-secondary rounded-lg px-4 py-3 text-sm font-medium text-center">
+          <div className="bg-ink border border-ink-line text-ink-text-secondary rounded-md px-4 py-3 text-sm font-medium text-center">
             This PayNote has expired and can no longer be paid.
           </div>
         ) : isOwner ? (
-          <div className="bg-accent-bg text-brand rounded-lg px-4 py-3 text-sm font-medium text-center">
+          <div className="bg-ink border border-lumen/30 text-lumen rounded-md px-4 py-3 text-sm font-medium text-center">
             This is your PayNote. Share the link or QR code with your client to get paid.
           </div>
         ) : !walletAddress ? (
           <button
             onClick={handleConnect}
             disabled={payState === "connecting"}
-            className="w-full bg-navy text-white font-medium px-5 py-3 rounded-lg hover:opacity-90 transition disabled:opacity-50"
+            className="w-full bg-lumen text-ink font-medium px-5 py-3 rounded-md hover:bg-lumen-dim transition disabled:opacity-50"
           >
             {payState === "connecting" ? "Connecting..." : "Connect Wallet to Pay"}
           </button>
@@ -265,22 +258,22 @@ export default function PayPage() {
           <button
             onClick={handlePay}
             disabled={["building", "signing", "submitting", "polling"].includes(payState)}
-            className="w-full bg-navy text-white font-medium px-5 py-3 rounded-lg hover:opacity-90 transition disabled:opacity-50"
+            className="w-full bg-lumen text-ink font-medium px-5 py-3 rounded-md hover:bg-lumen-dim transition disabled:opacity-50"
           >
             {payButtonLabel(payState)}
           </button>
         )}
 
         {payError && (
-          <p className="text-error text-sm mt-3">{payError}</p>
+          <p className="text-rust text-sm mt-3">{payError}</p>
         )}
 
         {walletAddress && !alreadyPaid && !isExpired && (
-          <p className="text-text-secondary text-xs mt-4 text-center">
+          <p className="text-ink-text-secondary text-xs mt-4 text-center font-mono">
             Connected: {walletAddress.slice(0, 4)}...{walletAddress.slice(-4)}{" "}
             <button
               onClick={handleConnect}
-              className="text-brand hover:underline font-medium"
+              className="text-lumen hover:underline font-medium"
             >
               Switch Wallet
             </button>
@@ -322,7 +315,7 @@ function ShareRow({
     <div className="mt-4 grid grid-cols-3 gap-2">
       <button
         onClick={onCopy}
-        className="flex items-center justify-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-medium text-text-primary hover:bg-surface-hover transition"
+        className="flex items-center justify-center gap-1.5 rounded-md border border-ink-line px-3 py-2 text-xs font-medium text-ink-text hover:bg-ink transition"
       >
         <CopyIcon />
         {copied ? "Copied!" : "Copy Link"}
@@ -331,14 +324,14 @@ function ShareRow({
         href={whatsappHref}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center justify-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-medium text-text-primary hover:bg-surface-hover transition"
+        className="flex items-center justify-center gap-1.5 rounded-md border border-ink-line px-3 py-2 text-xs font-medium text-ink-text hover:bg-ink transition"
       >
         <WhatsAppIcon />
         WhatsApp
       </a>
       <a
         href={emailHref}
-        className="flex items-center justify-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-medium text-text-primary hover:bg-surface-hover transition"
+        className="flex items-center justify-center gap-1.5 rounded-md border border-ink-line px-3 py-2 text-xs font-medium text-ink-text hover:bg-ink transition"
       >
         <EmailIcon />
         Email
@@ -373,31 +366,33 @@ function EmailIcon() {
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const styles =
-    status === "paid"
-      ? "bg-success-bg text-success"
-      : status === "expired"
-      ? "bg-error-bg text-error"
-      : "bg-pending-bg text-pending";
+function Stamp({ status }: { status: string }) {
+  const config: Record<string, { label: string; color: string; border: string }> = {
+    paid: { label: "PAID", color: "text-mint", border: "border-mint" },
+    pending: { label: "PENDING", color: "text-amber-ink", border: "border-amber-ink" },
+    expired: { label: "EXPIRED", color: "text-rust", border: "border-rust" },
+  };
+  const c = config[status] ?? config.pending;
   return (
-    <span className={`px-3 py-1 rounded-full text-xs font-medium ${styles}`}>
-      {status}
+    <span
+      className={`font-mono text-[10px] tracking-widest font-bold px-2.5 py-1 rounded border-2 border-double -rotate-3 ${c.color} ${c.border} shrink-0`}
+    >
+      {c.label}
     </span>
   );
 }
 
 function ReputationBadge({ reputation }: { reputation: Reputation }) {
   return (
-    <span className="text-xs font-medium text-text-secondary bg-accent-bg px-2 py-1 rounded-full">
-      ★ {reputation.score}/100 ({reputation.paidCount} paid)
+    <span className="text-xs font-mono font-medium text-mint bg-mint-bg border border-mint/20 px-2 py-1 rounded-md">
+      {reputation.score}/100 ({reputation.paidCount} paid)
     </span>
   );
 }
 
 function Centered({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-ink flex flex-col">
       <Header />
       <main className="flex-1 flex items-center justify-center p-6">
         {children}
@@ -408,7 +403,7 @@ function Centered({ children }: { children: React.ReactNode }) {
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-surface border border-border rounded-2xl p-8 shadow-sm max-w-sm w-full">
+    <div className="bg-ink-surface border border-ink-line rounded-lg p-8 max-w-sm w-full">
       {children}
     </div>
   );

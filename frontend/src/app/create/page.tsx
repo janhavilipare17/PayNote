@@ -60,12 +60,12 @@ export default function CreatePayNotePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-ink">
       <Header
         right={
           <button
             onClick={() => router.back()}
-            className="text-sm font-medium text-text-secondary hover:text-text-primary transition"
+            className="text-sm font-medium text-ink-text-secondary hover:text-ink-text transition"
           >
             ← Back
           </button>
@@ -73,14 +73,17 @@ export default function CreatePayNotePage() {
       />
 
       <main className="mx-auto max-w-lg px-6 py-10">
-        <h1 className="text-2xl font-bold text-text-primary mb-6">Create PayNote</h1>
+        <p className="font-mono text-xs tracking-widest text-lumen uppercase mb-2">
+          New Entry
+        </p>
+        <h1 className="font-display text-2xl font-bold text-ink-text mb-6">Create PayNote</h1>
 
         <form
           onSubmit={handleCreate}
-          className="rounded-2xl bg-surface border border-border p-6 shadow-sm space-y-5"
+          className="rounded-lg bg-ink-surface border border-ink-line p-6 space-y-5"
         >
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-1.5">
+            <label className="block text-sm font-medium text-ink-text mb-1.5">
               Amount
             </label>
             <input
@@ -90,18 +93,18 @@ export default function CreatePayNotePage() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="e.g. 50"
-                className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-text-primary focus:outline-none focus:border-brand transition"
+                className="w-full rounded-md border border-ink-line bg-ink px-4 py-2.5 text-ink-text font-mono focus:outline-none focus:border-lumen transition"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-1.5">
+            <label className="block text-sm font-medium text-ink-text mb-1.5">
               Asset
             </label>
             <select
               value={asset}
               onChange={(e) => setAsset(e.target.value)}
-              className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-text-primary focus:outline-none focus:border-brand transition"
+              className="w-full rounded-md border border-ink-line bg-ink px-4 py-2.5 text-ink-text font-mono focus:outline-none focus:border-lumen transition"
             >
               <option value="XLM">XLM</option>
               <option value="TESTUSD">TESTUSD</option>
@@ -110,7 +113,7 @@ export default function CreatePayNotePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-1.5">
+            <label className="block text-sm font-medium text-ink-text mb-1.5">
               Description
             </label>
             <input
@@ -118,28 +121,28 @@ export default function CreatePayNotePage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What is this payment for?"
-              className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-text-primary focus:outline-none focus:border-brand transition"
+              className="w-full rounded-md border border-ink-line bg-ink px-4 py-2.5 text-ink-text focus:outline-none focus:border-lumen transition"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-primary mb-1.5">
+            <label className="block text-sm font-medium text-ink-text mb-1.5">
               Expires
             </label>
             <input
               type="datetime-local"
               value={expiry}
               onChange={(e) => setExpiry(e.target.value)}
-              className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-text-primary focus:outline-none focus:border-brand transition"
+              className="w-full rounded-md border border-ink-line bg-ink px-4 py-2.5 text-ink-text font-mono focus:outline-none focus:border-lumen transition"
             />
           </div>
 
-          {error && <p className="text-error text-sm">{error}</p>}
+          {error && <p className="text-rust text-sm">{error}</p>}
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-lg bg-navy px-5 py-3 text-sm font-semibold text-white hover:opacity-90 transition disabled:opacity-50"
+            className="w-full rounded-md bg-lumen px-5 py-3 text-sm font-semibold text-ink hover:bg-lumen-dim transition disabled:opacity-50"
           >
             {submitting ? "Creating..." : "Create"}
           </button>
