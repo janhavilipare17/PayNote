@@ -88,7 +88,7 @@ export default function PayPage() {
     if (payState !== "polling" || !note) return;
     const interval = setInterval(async () => {
       try {
-        await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "https://paynote-backend.onrender.com"}/api/paynotes/${id}/recheck`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "https://paynote-backend.onrender.com"}/api/paynotes/token/${id}/recheck`, {
           method: "POST",
         });
         const updated = await getPayNote(id);

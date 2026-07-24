@@ -12,4 +12,5 @@ export interface PayNote {
   paidAmount?: string;
   paidAsset?: string;
   paymentLink: string;
+  publicToken?: string;
 }

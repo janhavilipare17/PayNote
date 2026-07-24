@@ -204,7 +204,7 @@ function LedgerRow({ note }: { note: PayNote }) {
 
   return (
     <a
-      href={"/pay/" + note.id}
+      href={"/pay/" + (note.publicToken || note.id)}
       className="relative block py-5 border-b border-ink-line last:border-b-0 group"
     >
       <span

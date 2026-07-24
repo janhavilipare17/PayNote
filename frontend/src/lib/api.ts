@@ -36,8 +36,8 @@ async function apiFetch<T>(path: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export async function getPayNote(id: string): Promise<PayNote> {
-  return apiFetch<PayNote>(`/api/paynotes/${id}`);
+export async function getPayNote(token: string): Promise<PayNote> {
+  return apiFetch<PayNote>(`/api/paynotes/token/${token}`);
 }
 
 export async function getPayNotesForAddress(
