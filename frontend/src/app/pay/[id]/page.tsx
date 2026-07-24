@@ -252,29 +252,29 @@ export default function PayPage() {
                   className="absolute w-40 h-40 animate-stamp-in"
                 >
                   <defs>
-                    <path id="stampTopArc" d="M 30 100 a 70 70 0 1 1 140 0" />
-                    <path id="stampBottomArc" d="M 170 100 a 70 70 0 1 1 -140 0" />
+                    <path id="stampTopArc" d="M 26 100 a 74 74 0 1 1 148 0" />
+                    <path id="stampBottomArc" d="M 174 100 a 74 74 0 1 1 -148 0" />
                   </defs>
                   <circle
-                    cx="100" cy="100" r="94"
-                    fill="none" stroke="var(--color-mint)" strokeWidth="12"
-                    strokeDasharray="7 7" strokeLinecap="round"
+                    cx="100" cy="100" r="95"
+                    fill="none" stroke="var(--color-mint)" strokeWidth="8"
+                    strokeDasharray="6 6" strokeLinecap="round"
                   />
-                  <circle cx="100" cy="100" r="78" fill="none" stroke="var(--color-mint)" strokeWidth="2" />
-                  <circle cx="100" cy="100" r="72" fill="none" stroke="var(--color-mint)" strokeWidth="2" />
-                  <text fill="var(--color-mint)" fontSize="13" fontWeight="bold" letterSpacing="2">
-                    <textPath href="#stampTopArc" startOffset="50%" textAnchor="middle">
+                  <circle cx="100" cy="100" r="54" fill="none" stroke="var(--color-mint)" strokeWidth="2" />
+                  <circle cx="100" cy="100" r="48" fill="none" stroke="var(--color-mint)" strokeWidth="2" />
+                  <text fill="var(--color-mint)" fontSize="15" fontWeight="bold" letterSpacing="1.5">
+                    <textPath xlinkHref="#stampTopArc" href="#stampTopArc" startOffset="50%" textAnchor="middle">
                       THANK YOU
                     </textPath>
                   </text>
                   <text
-                    x="100" y="112" textAnchor="middle"
-                    fill="var(--color-mint)" fontSize="34" fontWeight="bold" letterSpacing="1"
+                    x="100" y="109" textAnchor="middle"
+                    fill="var(--color-mint)" fontSize="26" fontWeight="bold" letterSpacing="1"
                   >
                     PAID
                   </text>
-                  <text fill="var(--color-mint)" fontSize="13" fontWeight="bold" letterSpacing="2">
-                    <textPath href="#stampBottomArc" startOffset="50%" textAnchor="middle">
+                  <text fill="var(--color-mint)" fontSize="15" fontWeight="bold" letterSpacing="1.5">
+                    <textPath xlinkHref="#stampBottomArc" href="#stampBottomArc" startOffset="50%" textAnchor="middle">
                       THANK YOU
                     </textPath>
                   </text>
