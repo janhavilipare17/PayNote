@@ -208,7 +208,7 @@ export default function PayPage() {
   if (!note) return null;
 
   const alreadyPaid = note.status === "paid" || payState === "done";
-  const isExpired = note.status === "expired" && !alreadyPaid;
+  const isExpired = (note.status === "expired" || new Date(note.expiresAt) < new Date()) && !alreadyPaid;
   const isOwner = walletAddress === note.creatorAddress;
   const shortCreator = `${note.creatorAddress.slice(0, 4)}...${note.creatorAddress.slice(-4)}`;
 
