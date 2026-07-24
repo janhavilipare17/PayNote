@@ -88,7 +88,7 @@ export default function PayPage() {
     if (payState !== "polling" || !note) return;
     const interval = setInterval(async () => {
       try {
-        await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "https://paynote-backend.onrender.com"}/api/paynotes/token/${id}/recheck`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "https://paynote-backend.onrender.com"}/api/paynotes/${id}/recheck`, {
           method: "POST",
         });
         const updated = await getPayNote(id);
@@ -208,7 +208,7 @@ export default function PayPage() {
   if (!note) return null;
 
   const alreadyPaid = note.status === "paid" || payState === "done";
-  const isExpired = (note.status === "expired" || new Date(note.expiresAt) < new Date()) && !alreadyPaid;
+  const isExpired = note.status === "expired" && !alreadyPaid;
   const isOwner = walletAddress === note.creatorAddress;
   const shortCreator = `${note.creatorAddress.slice(0, 4)}...${note.creatorAddress.slice(-4)}`;
 
@@ -245,13 +245,40 @@ export default function PayPage() {
         {alreadyPaid ? (
           <div>
             {justPaid && (
-              <div className="relative flex justify-center mb-5 h-24">
-                <span className="absolute w-24 h-24 rounded-full border-2 border-mint animate-stamp-ring" />
-                <span className="absolute w-24 h-24 rounded-full border-4 border-double border-mint flex items-center justify-center animate-stamp-in">
-                  <span className="font-mono text-xs font-bold tracking-widest text-mint">
+              <div className="relative flex justify-center mb-5 h-40">
+                <span className="absolute w-40 h-40 rounded-full border-2 border-mint animate-stamp-ring" />
+                <svg
+                  viewBox="0 0 200 200"
+                  className="absolute w-40 h-40 animate-stamp-in"
+                >
+                  <defs>
+                    <path id="stampTopArc" d="M 30 100 a 70 70 0 1 1 140 0" />
+                    <path id="stampBottomArc" d="M 170 100 a 70 70 0 1 1 -140 0" />
+                  </defs>
+                  <circle
+                    cx="100" cy="100" r="94"
+                    fill="none" stroke="var(--color-mint)" strokeWidth="12"
+                    strokeDasharray="7 7" strokeLinecap="round"
+                  />
+                  <circle cx="100" cy="100" r="78" fill="none" stroke="var(--color-mint)" strokeWidth="2" />
+                  <circle cx="100" cy="100" r="72" fill="none" stroke="var(--color-mint)" strokeWidth="2" />
+                  <text fill="var(--color-mint)" fontSize="13" fontWeight="bold" letterSpacing="2">
+                    <textPath href="#stampTopArc" startOffset="50%" textAnchor="middle">
+                      THANK YOU
+                    </textPath>
+                  </text>
+                  <text
+                    x="100" y="112" textAnchor="middle"
+                    fill="var(--color-mint)" fontSize="34" fontWeight="bold" letterSpacing="1"
+                  >
                     PAID
-                  </span>
-                </span>
+                  </text>
+                  <text fill="var(--color-mint)" fontSize="13" fontWeight="bold" letterSpacing="2">
+                    <textPath href="#stampBottomArc" startOffset="50%" textAnchor="middle">
+                      THANK YOU
+                    </textPath>
+                  </text>
+                </svg>
               </div>
             )}
             <div className="bg-mint-bg border border-mint/20 text-mint rounded-md px-4 py-3 text-sm font-medium">
