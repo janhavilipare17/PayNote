@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getPayNotesForAddress, getReputation, ApiError, Reputation } from "@/lib/api";
 import { PayNote } from "@/lib/types";
 import Header from "@/components/Header";
+
+type FilterStatus = "all" | "pending" | "paid" | "expired";
 
 export default function DashboardPage() {
   const params = useParams();
@@ -17,6 +19,9 @@ export default function DashboardPage() {
   const [copied, setCopied] = useState(false);
   const [showSlowMessage, setShowSlowMessage] = useState(false);
   const [reputation, setReputation] = useState<Reputation | null>(null);
+  const [filter, setFilter] = useState<FilterStatus>("all");
+  const [xlmBalance, setXlmBalance] = useState<string | null>(null);
+  const [copiedRowId, setCopiedRowId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -55,6 +60,23 @@ export default function DashboardPage() {
       .catch(() => {});
   }, [address]);
 
+  // Live wallet balance, straight from Horizon testnet — real on-chain data,
+  // not just app-tracked totals.
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`https://horizon-testnet.stellar.org/accounts/${address}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (cancelled || !data) return;
+        const native = data.balances?.find((b: any) => b.asset_type === "native");
+        if (native) setXlmBalance(Number(native.balance).toFixed(2));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [address]);
+
   function handleDisconnect() {
     localStorage.removeItem("walletAddress");
     router.replace("/");
@@ -66,7 +88,25 @@ export default function DashboardPage() {
     setTimeout(() => setCopied(false), 2000);
   }
 
+  function handleCopyRow(e: React.MouseEvent, note: PayNote) {
+    e.preventDefault();
+    e.stopPropagation();
+    const link = `${window.location.origin}/pay/${note.publicToken || note.id}`;
+    navigator.clipboard.writeText(link);
+    setCopiedRowId(note.id);
+    setTimeout(() => setCopiedRowId(null), 1500);
+  }
+
   const shortAddress = `${address.slice(0, 4)}...${address.slice(-4)}`;
+
+  const filteredNotes = useMemo(() => {
+    if (!payNotes) return [];
+    const sorted = [...payNotes].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    if (filter === "all") return sorted;
+    return sorted.filter((n) => n.status === filter);
+  }, [payNotes, filter]);
 
   return (
     <div className="min-h-screen bg-ink font-sans">
@@ -113,7 +153,12 @@ export default function DashboardPage() {
         </div>
 
         {!loading && !error && payNotes && payNotes.length > 0 && (
-          <LedgerSummary payNotes={payNotes} />
+          <>
+            <WalletBalanceCard balance={xlmBalance} payNotes={payNotes} />
+            <LedgerSummary payNotes={payNotes} />
+            <ActivitySparkline payNotes={payNotes} />
+            <FilterBar filter={filter} setFilter={setFilter} payNotes={payNotes} />
+          </>
         )}
 
         {loading && (
@@ -152,13 +197,60 @@ export default function DashboardPage() {
         )}
 
         {!loading && !error && payNotes && payNotes.length > 0 && (
-          <div className="relative border-l border-ink-line pl-6 mt-8">
-            {payNotes.map((note) => (
-              <LedgerRow key={note.id} note={note} />
-            ))}
+          <div className="relative border-l border-ink-line pl-6 mt-6">
+            {filteredNotes.length === 0 ? (
+              <p className="text-ink-text-secondary text-sm py-6">
+                No PayNotes match this filter.
+              </p>
+            ) : (
+              filteredNotes.map((note) => (
+                <LedgerRow
+                  key={note.id}
+                  note={note}
+                  copied={copiedRowId === note.id}
+                  onCopy={(e) => handleCopyRow(e, note)}
+                />
+              ))
+            )}
           </div>
         )}
       </main>
+    </div>
+  );
+}
+
+function WalletBalanceCard({
+  balance,
+  payNotes,
+}: {
+  balance: string | null;
+  payNotes: PayNote[];
+}) {
+  const totalRequested = payNotes.reduce((sum, n) => sum + Number(n.amount || 0), 0);
+  const totalReceived = payNotes
+    .filter((n) => n.status === "paid")
+    .reduce((sum, n) => sum + Number(n.paidAmount || n.amount || 0), 0);
+
+  return (
+    <div className="grid grid-cols-3 gap-3 mb-3">
+      <div className="rounded-lg bg-ink-surface border border-lumen/30 p-5">
+        <p className="text-xs text-ink-text-secondary uppercase tracking-wide">Wallet Balance</p>
+        <p className="font-mono text-xl font-semibold text-lumen mt-1">
+          {balance !== null ? `${balance} XLM` : "..."}
+        </p>
+      </div>
+      <div className="rounded-lg bg-ink-surface border border-ink-line p-5">
+        <p className="text-xs text-ink-text-secondary uppercase tracking-wide">Total Requested</p>
+        <p className="font-mono text-xl font-semibold text-ink-text mt-1">
+          {totalRequested.toFixed(2)}
+        </p>
+      </div>
+      <div className="rounded-lg bg-ink-surface border border-ink-line p-5">
+        <p className="text-xs text-ink-text-secondary uppercase tracking-wide">Total Received</p>
+        <p className="font-mono text-xl font-semibold text-mint mt-1">
+          {totalReceived.toFixed(2)}
+        </p>
+      </div>
     </div>
   );
 }
@@ -169,7 +261,7 @@ function LedgerSummary({ payNotes }: { payNotes: PayNote[] }) {
   const total = payNotes.length;
 
   return (
-    <div className="flex items-stretch rounded-lg border border-ink-line bg-ink-surface overflow-hidden mb-2">
+    <div className="flex items-stretch rounded-lg border border-ink-line bg-ink-surface overflow-hidden mb-3">
       <SummaryCell label="Total" value={total} />
       <div className="w-px bg-ink-line" />
       <SummaryCell label="Paid" value={paid} valueClass="text-mint" />
@@ -198,13 +290,119 @@ function SummaryCell({
   );
 }
 
-function LedgerRow({ note }: { note: PayNote }) {
+// Simple sparkline: count of PayNotes created per day, last 7 days.
+function ActivitySparkline({ payNotes }: { payNotes: PayNote[] }) {
+  const days = 7;
+  const counts: number[] = new Array(days).fill(0);
+  const now = new Date();
+
+  for (const note of payNotes) {
+    const created = new Date(note.createdAt);
+    const diffDays = Math.floor((now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays >= 0 && diffDays < days) {
+      counts[days - 1 - diffDays]++;
+    }
+  }
+
+  const max = Math.max(...counts, 1);
+  const width = 280;
+  const height = 40;
+  const step = width / (days - 1);
+  const points = counts
+    .map((c, i) => `${i * step},${height - (c / max) * (height - 6) - 3}`)
+    .join(" ");
+
+  return (
+    <div className="rounded-lg bg-ink-surface border border-ink-line p-5 mb-6 flex items-center justify-between">
+      <div>
+        <p className="text-xs text-ink-text-secondary uppercase tracking-wide">Activity, last 7 days</p>
+        <p className="font-mono text-sm text-ink-text mt-1">
+          {counts.reduce((a, b) => a + b, 0)} PayNotes created
+        </p>
+      </div>
+      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+        <polyline
+          points={points}
+          fill="none"
+          stroke="var(--color-lumen)"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
+  );
+}
+
+function FilterBar({
+  filter,
+  setFilter,
+  payNotes,
+}: {
+  filter: FilterStatus;
+  setFilter: (f: FilterStatus) => void;
+  payNotes: PayNote[];
+}) {
+  const counts = {
+    all: payNotes.length,
+    pending: payNotes.filter((n) => n.status === "pending").length,
+    paid: payNotes.filter((n) => n.status === "paid").length,
+    expired: payNotes.filter((n) => n.status === "expired").length,
+  };
+
+  const options: { key: FilterStatus; label: string }[] = [
+    { key: "all", label: "All" },
+    { key: "pending", label: "Pending" },
+    { key: "paid", label: "Paid" },
+    { key: "expired", label: "Expired" },
+  ];
+
+  return (
+    <div className="flex gap-2 mb-2">
+      {options.map((opt) => (
+        <button
+          key={opt.key}
+          onClick={() => setFilter(opt.key)}
+          className={`px-3 py-1.5 rounded-md text-xs font-medium font-mono border transition ${
+            filter === opt.key
+              ? "bg-lumen text-ink border-lumen"
+              : "bg-ink-surface text-ink-text-secondary border-ink-line hover:text-ink-text"
+          }`}
+        >
+          {opt.label} ({counts[opt.key]})
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function timeAgo(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
+function LedgerRow({
+  note,
+  copied,
+  onCopy,
+}: {
+  note: PayNote;
+  copied: boolean;
+  onCopy: (e: React.MouseEvent) => void;
+}) {
   const tickColor =
     note.status === "paid" ? "bg-mint" : note.status === "expired" ? "bg-rust" : "bg-amber-ink";
 
   return (
     <a
       href={"/pay/" + (note.publicToken || note.id)}
+      title={new Date(note.createdAt).toLocaleString()}
       className="relative block py-5 border-b border-ink-line last:border-b-0 group"
     >
       <span
@@ -216,12 +414,34 @@ function LedgerRow({ note }: { note: PayNote }) {
         <div className="min-w-0">
           <p className="text-ink-text font-medium truncate">{note.description}</p>
           <p className="font-mono text-sm text-ink-text-secondary mt-1">
-            {note.amount} {note.asset} · #{note.id}
+            {note.amount} {note.asset} · #{note.id} · {timeAgo(note.createdAt)}
           </p>
         </div>
-        <Stamp status={note.status} />
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={onCopy}
+            className="rounded-md border border-ink-line px-2 py-1.5 text-ink-text-secondary hover:text-ink-text hover:border-lumen/50 transition"
+            title="Copy payment link"
+          >
+            {copied ? (
+              <span className="text-[10px] font-mono px-1">copied</span>
+            ) : (
+              <CopyIcon />
+            )}
+          </button>
+          <Stamp status={note.status} />
+        </div>
       </div>
     </a>
+  );
+}
+
+function CopyIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <rect x="9" y="9" width="13" height="13" rx="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
   );
 }
 
