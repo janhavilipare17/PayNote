@@ -88,7 +88,7 @@ export default function PayPage() {
     if (payState !== "polling" || !note) return;
     const interval = setInterval(async () => {
       try {
-        await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "https://paynote-backend.onrender.com"}/api/paynotes/${id}/recheck`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "https://paynote-backend.onrender.com"}/api/paynotes/token/${id}/recheck`, {
           method: "POST",
         });
         const updated = await getPayNote(id);
@@ -144,7 +144,7 @@ export default function PayPage() {
       });
 
       setPayState("signing");
-      const signedXdr = await signWithFreighter(xdr, Networks.TESTNET);
+      const signedXdr = await signWithFreighter(xdr, Networks.PUBLIC);
 
       setPayState("submitting");
       const result = await submitSignedTransaction(signedXdr);
@@ -285,7 +285,7 @@ export default function PayPage() {
               ✓ Payment received. Thank you!
             </div>
             {txHash && (
-              <a href={`https://stellar.expert/explorer/testnet/tx/${txHash}`}
+              <a href={`https://stellar.expert/explorer/public/tx/${txHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm font-medium text-lumen hover:underline mt-3 block text-center"

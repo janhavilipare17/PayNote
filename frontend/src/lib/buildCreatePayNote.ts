@@ -11,8 +11,8 @@ import {
   xdr,
 } from "@stellar/stellar-sdk";
 
-const RPC_URL = "https://soroban-testnet.stellar.org";
-const CONTRACT_ID = "CAYUDIMIOMD7YPPDS76VLUY5PZFTVFTEKQXV2M7CA374TAGX2U7WPW7R";
+const RPC_URL = "https://mainnet.sorobanrpc.com";
+const CONTRACT_ID = "CAUCCQFSBSCAS6F5KEA2UDCS3UHCUNQNSKZZOYN4RQXVIQ6XZ4D6M736";
 
 const server = new rpc.Server(RPC_URL);
 
@@ -53,7 +53,7 @@ const amountAsInt = BigInt(Math.round(parseFloat(amount)));
 
   const tx = new TransactionBuilder(account, {
     fee: BASE_FEE,
-    networkPassphrase: Networks.TESTNET,
+    networkPassphrase: Networks.PUBLIC,
   })
     .addOperation(operation)
     .setTimeout(60)
@@ -66,7 +66,7 @@ const amountAsInt = BigInt(Math.round(parseFloat(amount)));
 export async function submitCreatePayNoteTransaction(
   signedXdr: string
 ): Promise<string> {
-  const tx = TransactionBuilder.fromXDR(signedXdr, Networks.TESTNET);
+  const tx = TransactionBuilder.fromXDR(signedXdr, Networks.PUBLIC);
   const sendResult = await server.sendTransaction(tx);
 
   if (sendResult.status === "ERROR") {

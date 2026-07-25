@@ -64,7 +64,7 @@ export default function DashboardPage() {
   // not just app-tracked totals.
   useEffect(() => {
     let cancelled = false;
-    fetch(`https://horizon-testnet.stellar.org/accounts/${address}`)
+    fetch(`https://horizon.stellar.org/accounts/${address}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (cancelled || !data) return;

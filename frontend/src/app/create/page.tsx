@@ -47,7 +47,7 @@ export default function CreatePayNotePage() {
         expiresAt: expiresAtSeconds,
       });
 
-      const signedXdr = await signWithFreighter(xdrTx, Networks.TESTNET);
+      const signedXdr = await signWithFreighter(xdrTx, Networks.PUBLIC);
       const newId = await submitCreatePayNoteTransaction(signedXdr);
       await syncPayNote(newId);
 

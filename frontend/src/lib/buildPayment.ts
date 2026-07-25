@@ -9,7 +9,7 @@ import {
   BASE_FEE,
 } from "@stellar/stellar-sdk";
 
-const HORIZON_URL = "https://horizon-testnet.stellar.org";
+const HORIZON_URL = "https://horizon.stellar.org";
 const server = new Horizon.Server(HORIZON_URL);
 
 // --- TEMPORARY placeholder until backend returns `assetIssuer` on the PayNote ---
@@ -54,7 +54,7 @@ export async function buildPaymentTransaction({
 
   const tx = new TransactionBuilder(account, {
     fee: BASE_FEE,
-    networkPassphrase: Networks.TESTNET,
+    networkPassphrase: Networks.PUBLIC,
   })
     .addOperation(
       Operation.payment({
@@ -71,6 +71,6 @@ export async function buildPaymentTransaction({
 }
 
 export async function submitSignedTransaction(signedXdr: string) {
-  const tx = TransactionBuilder.fromXDR(signedXdr, Networks.TESTNET);
+  const tx = TransactionBuilder.fromXDR(signedXdr, Networks.PUBLIC);
   return server.submitTransaction(tx);
 }
