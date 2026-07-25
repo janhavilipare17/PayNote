@@ -78,7 +78,7 @@ export async function submitCreatePayNoteTransaction(
   // Poll until the transaction is confirmed
   let getResult = await server.getTransaction(hash);
   let attempts = 0;
-  while (getResult.status === "NOT_FOUND" && attempts < 15) {
+  while (getResult.status === "NOT_FOUND" && attempts < 30) {
     await new Promise((resolve) => setTimeout(resolve, 2000));
     getResult = await server.getTransaction(hash);
     attempts++;
