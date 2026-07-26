@@ -43,7 +43,12 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-ink">
+    <div className="min-h-screen bg-ink relative overflow-hidden">
+      <div className="absolute -top-24 -right-20 w-96 h-96 rounded-full bg-lumen/20 blur-3xl animate-float-a pointer-events-none" />
+      <div className="absolute top-1/2 -left-28 w-80 h-80 rounded-full bg-mint/15 blur-3xl animate-float-b pointer-events-none" />
+      <div className="absolute -bottom-28 right-1/4 w-72 h-72 rounded-full bg-amber-ink/10 blur-3xl animate-float-c pointer-events-none" />
+
+      <div className="relative z-10">
       <Header
         right={
           <button
@@ -83,9 +88,9 @@ export default function Home() {
 
           {/* Right column - stats */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2 rounded-lg bg-ink-surface p-6 border border-ink-line">
+            <div className="col-span-2 rounded-lg bg-ink-surface/80 backdrop-blur-sm p-6 border border-ink-line shadow-xl shadow-black/20 hover:border-lumen/40 transition">
               <div className="flex items-start justify-between">
-                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-lumen text-ink">
+                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-lumen text-ink shadow-lg shadow-lumen/30">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="2" y="6" width="20" height="12" rx="2" />
                     <path d="M2 10h20" />
@@ -99,7 +104,7 @@ export default function Home() {
               <p className="font-mono text-2xl font-bold text-ink-text">$24,592.00</p>
             </div>
 
-            <div className="rounded-lg bg-ink-surface p-5 border border-ink-line">
+            <div className="rounded-lg bg-ink-surface/80 backdrop-blur-sm p-5 border border-ink-line shadow-xl shadow-black/20">
               <div className="flex items-center gap-1.5 text-sm font-medium text-ink-text">
                 <span className="h-2 w-2 rounded-full bg-lumen animate-pulse" />
                 Active Node
@@ -114,8 +119,8 @@ export default function Home() {
               </svg>
             </div>
 
-            <div className="flex flex-col items-center justify-center rounded-lg bg-ink border border-lumen/30 p-5 text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-lumen">
+            <div className="flex flex-col items-center justify-center rounded-lg bg-ink-surface/60 backdrop-blur-sm border border-lumen/30 p-5 text-center shadow-xl shadow-lumen/10">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-lumen shadow-lg shadow-lumen/40">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink)" strokeWidth="2">
                   <circle cx="12" cy="12" r="2" />
                   <path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M19.1 4.9l-2.8 2.8M7.7 16.3l-2.8 2.8" />
@@ -179,6 +184,7 @@ export default function Home() {
           {connecting ? "Connecting..." : "Connect Wallet"}
         </button>
       </section>
+      </div>
     </div>
   );
 }
@@ -193,7 +199,7 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="rounded-lg border border-ink-line bg-ink-surface p-6">
+    <div className="rounded-lg border border-ink-line bg-ink-surface/70 backdrop-blur-sm p-6 shadow-lg shadow-black/10 hover:border-lumen/40 hover:shadow-lumen/10 transition">
       <div className="flex h-11 w-11 items-center justify-center rounded-md bg-ink text-lumen border border-lumen/20">
         {icon}
       </div>
