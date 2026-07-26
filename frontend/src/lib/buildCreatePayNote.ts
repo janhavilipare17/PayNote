@@ -52,7 +52,7 @@ const amountAsInt = BigInt(Math.round(parseFloat(amount)));
   );
 
   const tx = new TransactionBuilder(account, {
-    fee: BASE_FEE,
+    fee: "1000000",
     networkPassphrase: Networks.PUBLIC,
   })
     .addOperation(operation)

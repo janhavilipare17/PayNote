@@ -95,3 +95,26 @@ body {
     animation: none;
   }
 }
+
+@keyframes float-a {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -40px) scale(1.08); }
+}
+@keyframes float-b {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-35px, 30px) scale(1.05); }
+}
+@keyframes float-c {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, 35px) scale(0.95); }
+}
+
+.animate-float-a { animation: float-a 14s ease-in-out infinite; }
+.animate-float-b { animation: float-b 18s ease-in-out infinite; }
+.animate-float-c { animation: float-c 16s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-a, .animate-float-b, .animate-float-c {
+    animation: none;
+  }
+}

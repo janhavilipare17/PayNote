@@ -448,11 +448,16 @@ function ReputationBadge({ reputation }: { reputation: Reputation }) {
 
 function Centered({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-ink flex flex-col">
-      <Header />
-      <main className="flex-1 flex items-center justify-center p-6">
-        {children}
-      </main>
+    <div className="min-h-screen bg-ink flex flex-col relative overflow-hidden">
+      <div className="absolute -top-20 -left-20 w-96 h-96 rounded-full bg-lumen/20 blur-3xl animate-float-a pointer-events-none" />
+      <div className="absolute top-1/3 -right-24 w-80 h-80 rounded-full bg-mint/15 blur-3xl animate-float-b pointer-events-none" />
+      <div className="absolute -bottom-24 left-1/4 w-72 h-72 rounded-full bg-amber-ink/10 blur-3xl animate-float-c pointer-events-none" />
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-1 flex items-center justify-center p-6">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
