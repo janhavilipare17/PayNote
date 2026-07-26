@@ -109,7 +109,12 @@ export default function DashboardPage() {
   }, [payNotes, filter]);
 
   return (
-    <div className="min-h-screen bg-ink font-sans">
+    <div className="min-h-screen bg-ink font-sans relative overflow-hidden">
+      <div className="absolute -top-24 -right-20 w-96 h-96 rounded-full bg-lumen/20 blur-3xl animate-float-a pointer-events-none" />
+      <div className="absolute top-1/2 -left-28 w-80 h-80 rounded-full bg-mint/15 blur-3xl animate-float-b pointer-events-none" />
+      <div className="absolute -bottom-28 right-1/4 w-72 h-72 rounded-full bg-amber-ink/10 blur-3xl animate-float-c pointer-events-none" />
+
+      <div className="relative z-10">
       <Header
         right={
           <div className="flex items-center gap-3">
@@ -215,6 +220,7 @@ export default function DashboardPage() {
           </div>
         )}
       </main>
+      </div>
     </div>
   );
 }
