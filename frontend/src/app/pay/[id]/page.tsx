@@ -232,7 +232,7 @@ export default function PayPage() {
 
         {!isExpired && !alreadyPaid && (
           <div className="flex justify-center my-4">
-            <div className="p-3 bg-white rounded-lg border border-ink-line">
+            <div className="p-3 bg-white rounded-xl border border-lumen/30 shadow-lg shadow-lumen/10">
               <QRCodeSVG value={typeof window !== "undefined" ? window.location.href : ""} size={140} />
             </div>
           </div>
@@ -314,7 +314,7 @@ export default function PayPage() {
           <button
             onClick={handlePay}
             disabled={["building", "signing", "submitting", "polling"].includes(payState)}
-            className="w-full bg-lumen text-ink font-medium px-5 py-3 rounded-md hover:bg-lumen-dim transition disabled:opacity-50"
+            className="w-full bg-lumen text-ink font-medium px-5 py-3 rounded-md hover:bg-lumen-dim transition disabled:opacity-50 shadow-lg shadow-lumen/20"
           >
             {payButtonLabel(payState)}
           </button>
@@ -464,7 +464,7 @@ function Centered({ children }: { children: React.ReactNode }) {
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-ink-surface border border-ink-line rounded-lg p-8 max-w-sm w-full">
+    <div className="bg-ink-surface/80 backdrop-blur-sm border border-ink-line rounded-xl p-8 max-w-sm w-full shadow-2xl shadow-black/30">
       {children}
     </div>
   );
