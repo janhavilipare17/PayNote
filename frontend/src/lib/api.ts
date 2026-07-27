@@ -66,5 +66,21 @@ export interface Reputation {
 export async function getReputation(address: string): Promise<Reputation> {
   return apiFetch<Reputation>(`/api/reputation/${address}`);
 }
-
+export async function sendPayNoteEmail(token: string, toEmail: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/api/paynotes/token/${token}/send-email`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ toEmail }),
+  });
+  if (!res.ok) {
+    let message = `Failed to send email (${res.status})`;
+    try {
+      const body = await res.json();
+      if (body?.error) message = body.error;
+    } catch {
+      // response wasn't JSON, ignore
+    }
+    throw new ApiError(message, res.status);
+  }
+}
 export { ApiError };
