@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 import { PayNote } from "@/lib/types";
-import { getPayNote, getReputation, ApiError, Reputation } from "@/lib/api";
+import { getPayNote, getReputation, ApiError, Reputation, sendPayNoteEmail } from "@/lib/api";
 import { connectWallet, getConnectedAddress, signWithFreighter } from "@/lib/wallet";
 import { buildPaymentTransaction, submitSignedTransaction } from "@/lib/buildPayment";
 import { Networks } from "@stellar/stellar-sdk";
@@ -359,39 +359,79 @@ function ShareRow({
   copied: boolean;
   onCopy: () => void;
 }) {
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [emailAddress, setEmailAddress] = useState("");
+  const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+
   const link = typeof window !== "undefined" ? window.location.href : "";
   const message = `Payment request: ${note.amount} ${note.asset} for "${note.description}". Pay here: ${link}`;
-
   const whatsappHref = `https://wa.me/?text=${encodeURIComponent(message)}`;
-  const emailHref = `mailto:?subject=${encodeURIComponent(
-    `Payment request: ${note.amount} ${note.asset}`
-  )}&body=${encodeURIComponent(message)}`;
+
+  async function handleSendEmail(e: React.FormEvent) {
+    e.preventDefault();
+    if (!emailAddress) return;
+    setEmailStatus("sending");
+    try {
+      await sendPayNoteEmail(note.publicToken || note.id, emailAddress);
+      setEmailStatus("sent");
+    } catch {
+      setEmailStatus("error");
+    }
+  }
 
   return (
-    <div className="mt-4 grid grid-cols-3 gap-2">
-      <button
-        onClick={onCopy}
-        className="flex items-center justify-center gap-1.5 rounded-md border border-ink-line px-3 py-2 text-xs font-medium text-ink-text hover:bg-ink transition"
-      >
-        <CopyIcon />
-        {copied ? "Copied!" : "Copy Link"}
-      </button>
-      <a
-        href={whatsappHref}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center justify-center gap-1.5 rounded-md border border-ink-line px-3 py-2 text-xs font-medium text-ink-text hover:bg-ink transition"
-      >
-        <WhatsAppIcon />
-        WhatsApp
-      </a>
-      <a
-        href={emailHref}
-        className="flex items-center justify-center gap-1.5 rounded-md border border-ink-line px-3 py-2 text-xs font-medium text-ink-text hover:bg-ink transition"
-      >
-        <EmailIcon />
-        Email
-      </a>
+    <div className="mt-4">
+      <div className="grid grid-cols-3 gap-2">
+        <button
+          onClick={onCopy}
+          className="flex items-center justify-center gap-1.5 rounded-md border border-ink-line px-3 py-2 text-xs font-medium text-ink-text hover:bg-ink transition"
+        >
+          <CopyIcon />
+          {copied ? "Copied!" : "Copy Link"}
+        </button>
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-1.5 rounded-md border border-ink-line px-3 py-2 text-xs font-medium text-ink-text hover:bg-ink transition"
+        >
+          <WhatsAppIcon />
+          WhatsApp
+        </a>
+        <button
+          onClick={() => setShowEmailForm((v) => !v)}
+          className="flex items-center justify-center gap-1.5 rounded-md border border-ink-line px-3 py-2 text-xs font-medium text-ink-text hover:bg-ink transition"
+        >
+          <EmailIcon />
+          Email
+        </button>
+      </div>
+
+      {showEmailForm && (
+        <form onSubmit={handleSendEmail} className="mt-3 flex gap-2">
+          <input
+            type="email"
+            required
+            value={emailAddress}
+            onChange={(e) => setEmailAddress(e.target.value)}
+            placeholder="client@example.com"
+            className="flex-1 rounded-md border border-ink-line bg-ink px-3 py-2 text-sm text-ink-text focus:outline-none focus:border-lumen transition"
+          />
+          <button
+            type="submit"
+            disabled={emailStatus === "sending"}
+            className="rounded-md bg-lumen px-4 py-2 text-xs font-semibold text-ink hover:bg-lumen-dim transition disabled:opacity-50"
+          >
+            {emailStatus === "sending" ? "Sending..." : "Send"}
+          </button>
+        </form>
+      )}
+      {emailStatus === "sent" && (
+        <p className="text-mint text-xs mt-2">Email sent.</p>
+      )}
+      {emailStatus === "error" && (
+        <p className="text-rust text-xs mt-2">Failed to send. Try again.</p>
+      )}
     </div>
   );
 }
